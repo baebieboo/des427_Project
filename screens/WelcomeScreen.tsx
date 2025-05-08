@@ -1,32 +1,40 @@
-// screens/WelcomeScreen.tsx
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../types/navigation';
 
-type NavigationProp = NativeStackNavigationProp<RootStackParamList, 'Welcome'>;
+type WelcomeScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Welcome'>;
 
 export default function WelcomeScreen() {
-  const navigation = useNavigation<NavigationProp>();
+  const navigation = useNavigation<WelcomeScreenNavigationProp>();
 
   return (
     <View style={styles.container}>
-      <Text style={styles.heading}>Let’s Get</Text>
-      <Text style={styles.subheading}>Started!</Text>
+      {/* 🔝 โลโก้ด้านบน */}
+      <Image
+        source={require('../assets/logo.png')}
+        style={styles.logo}
+        resizeMode="contain"
+      />
 
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => navigation.navigate('Login')}
-      >
-        <Text style={styles.buttonText}>SIGN IN</Text>
-      </TouchableOpacity>
+      <Text style={styles.title}>Let's Get Started!</Text>
 
-      <Text style={styles.or}>Don’t have an account?</Text>
+      <View style={styles.buttonContainer}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => navigation.navigate('Create')}
+        >
+          <Text style={styles.buttonText}>Create Account</Text>
+        </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => navigation.navigate('Create')}>
-        <Text style={styles.signupText}>SIGN UP NOW</Text>
-      </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.button, { backgroundColor: '#4f46e5' }]}
+          onPress={() => navigation.navigate('Login')}
+        >
+          <Text style={styles.buttonText}>Log In</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
@@ -34,42 +42,35 @@ export default function WelcomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000',
+    backgroundColor: '#000000',
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
   },
-  heading: {
-    color: '#fff',
-    fontSize: 36,
-    fontWeight: '300',
+  logo: {
+    width: 180,
+    height: 180,
+    marginBottom: 30,
   },
-  subheading: {
-    color: '#a855f7',
-    fontSize: 36,
-    fontWeight: '700',
+  title: {
+    fontSize: 28,
+    color: '#fff',
+    fontWeight: 'bold',
     marginBottom: 40,
+  },
+  buttonContainer: {
+    width: '100%',
   },
   button: {
     backgroundColor: '#a855f7',
-    paddingVertical: 14,
-    paddingHorizontal: 60,
-    borderRadius: 30,
+    padding: 14,
+    borderRadius: 10,
     marginBottom: 20,
+    alignItems: 'center',
   },
   buttonText: {
     color: '#fff',
-    fontSize: 18,
-    fontWeight: '600',
-  },
-  or: {
-    color: '#fff',
-    fontSize: 14,
-  },
-  signupText: {
-    color: '#a855f7',
     fontSize: 16,
-    fontWeight: '700',
-    marginTop: 8,
+    fontWeight: 'bold',
   },
 });

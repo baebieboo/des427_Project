@@ -1,3 +1,4 @@
+// 📂 index.js
 console.log('📂 Starting server...');
 require('dotenv').config();
 console.log('✅ .env loaded');
@@ -111,10 +112,25 @@ app.post('/upload', upload.single('image'), async (req, res) => {
   const imageUrl = `http://172.20.10.2:3000/uploads/${file.filename}`;
 
   try {
-    await db.query('INSERT INTO photos (user_id, image_url) VALUES (?, ?)', [user_id, imageUrl]);
+    await db.query('INSERT INTO photos (user_id, image_url, uploaded_at) VALUES (?, ?, NOW())', [user_id, imageUrl]);
     res.status(201).json({ message: 'Uploaded', imageUrl });
   } catch (err) {
     console.error('❌ Upload error:', err.message);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// 🏠 Recent photos (HomeScreen)
+app.get('/photos/:userId/recent', async (req, res) => {
+  const { userId } = req.params;
+  try {
+    const [photos] = await db.query(
+      'SELECT * FROM photos WHERE user_id = ? ORDER BY uploaded_at DESC LIMIT 3',
+      [userId]
+    );
+    res.json({ photos });
+  } catch (err) {
+    console.error('❌ Fetch recent photos error:', err.message);
     res.status(500).json({ message: 'Server error' });
   }
 });
@@ -141,30 +157,29 @@ app.get('/feed/:userId', async (req, res) => {
 
 // 🔍 Search with isFollowing
 app.get('/search', async (req, res) => {
-    const { query, currentUserId } = req.query;
-  
-    if (!query || !currentUserId) {
-      return res.status(400).json({ message: 'Missing query or user id' });
-    }
-  
-    try {
-      const [users] = await db.query(
-        `SELECT u.id, u.handle,
-          EXISTS (
-            SELECT 1 FROM follows f
-            WHERE f.follower_id = ? AND f.following_id = u.id
-          ) AS isFollowing
-         FROM users u
-         WHERE u.handle LIKE ? AND u.id != ?`,
-        [currentUserId, `%${query}%`, currentUserId]
-      );
-  
-      res.json({ users });
-    } catch (err) {
-      console.error('❌ Search error:', err.message);
-      res.status(500).json({ message: 'Server error' });
-    }
-  });
+  const { query, currentUserId } = req.query;
+  if (!query || !currentUserId) {
+    return res.status(400).json({ message: 'Missing query or user id' });
+  }
+
+  try {
+    const [users] = await db.query(
+      `SELECT u.id, u.handle,
+        EXISTS (
+          SELECT 1 FROM follows f
+          WHERE f.follower_id = ? AND f.following_id = u.id
+        ) AS isFollowing
+       FROM users u
+       WHERE u.handle LIKE ? AND u.id != ?`,
+      [currentUserId, `%${query}%`, currentUserId]
+    );
+
+    res.json({ users });
+  } catch (err) {
+    console.error('❌ Search error:', err.message);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
 
 // ➕ Follow
 app.post('/follow', async (req, res) => {

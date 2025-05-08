@@ -51,12 +51,10 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.container}>
-      {/* Header */}
       <Text style={styles.title}>Welcome</Text>
       <Text style={styles.username}>{user.handle}</Text>
       <Text style={styles.subtitle}>Your most recent photos!</Text>
 
-      {/* Image Grid */}
       {loading ? (
         <ActivityIndicator size="large" color="#a855f7" style={{ marginTop: 20 }} />
       ) : photos.length === 0 ? (
@@ -77,7 +75,7 @@ export default function HomeScreen() {
         />
       )}
 
-      {/* Footer Buttons */}
+      {/* 🔍 Search | 📸 Upload | 📰 Feed */}
       <View style={styles.buttonRow}>
         <TouchableOpacity
           onPress={() => navigation.navigate('Search', { user })}
@@ -101,7 +99,7 @@ export default function HomeScreen() {
         </TouchableOpacity>
       </View>
 
-      {/* Logout */}
+      {/* 🚪 Logout Button */}
       <TouchableOpacity
         onPress={() => navigation.dispatch(StackActions.replace('Welcome'))}
         style={styles.logoutButton}
@@ -113,11 +111,33 @@ export default function HomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#000', padding: 16, paddingTop: 50 },
-  title: { color: '#fff', fontSize: 28, fontWeight: '300' },
-  username: { color: '#a855f7', fontSize: 28, fontWeight: '700', marginBottom: 12 },
-  subtitle: { color: '#fff', fontSize: 16, marginBottom: 20 },
-  noPhotos: { color: '#888', textAlign: 'center', marginTop: 30 },
+  container: {
+    flex: 1,
+    backgroundColor: '#000',
+    padding: 16,
+    paddingTop: 50,
+  },
+  title: {
+    color: '#fff',
+    fontSize: 28,
+    fontWeight: '300',
+  },
+  username: {
+    color: '#a855f7',
+    fontSize: 28,
+    fontWeight: '700',
+    marginBottom: 12,
+  },
+  subtitle: {
+    color: '#fff',
+    fontSize: 16,
+    marginBottom: 20,
+  },
+  noPhotos: {
+    color: '#aaa',
+    textAlign: 'center',
+    marginTop: 40,
+  },
   image: {
     width: '48%',
     height: 150,
@@ -129,6 +149,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     bottom: 20,
     flexDirection: 'row',
+    justifyContent: 'space-between',
     alignSelf: 'center',
     gap: 30,
   },
@@ -138,7 +159,7 @@ const styles = StyleSheet.create({
     borderRadius: 30,
   },
   iconText: {
-    color: '#fff',
+    color: 'white',
     fontSize: 24,
   },
   logoutButton: {
