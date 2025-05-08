@@ -1,4 +1,3 @@
-// screens/LoginScreen.tsx
 import React, { useState } from 'react';
 import {
   View,
@@ -20,25 +19,35 @@ export default function LoginScreen() {
   const [password, setPassword] = useState('');
 
   const handleLogin = async () => {
-    console.log('🔍 Start login with:', email, password);
+    console.log('🟣 Login START');
+    console.log('➡️ Email:', email);
+    console.log('➡️ Password:', password);
 
     try {
-      const response = await fetch('http://172.20.10.2:3000/login', {
+      const res = await fetch('http://172.20.10.2:3000/login', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       });
 
-      const data = await response.json();
-      console.log('✅ Response:', data);
+      const text = await res.text();
+      console.log('🟡 Raw Response:', text);
 
-      if (!response.ok) throw new Error(data.message || 'Login failed');
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch (parseError) {
+        throw new Error('Response is not JSON');
+      }
 
+      if (!res.ok) {
+        throw new Error(data.message || 'Login failed');
+      }
+
+      console.log('✅ Login Success', data);
       navigation.navigate('Home', { user: data.user });
     } catch (error: any) {
-      console.error('❌ Fetch error:', error.message);
+      console.error('❌ Login Error:', error.message);
       Alert.alert('Login Failed', error.message);
     }
   };
@@ -61,9 +70,9 @@ export default function LoginScreen() {
         placeholder="Password"
         placeholderTextColor="#aaa"
         style={styles.input}
-        secureTextEntry
         value={password}
         onChangeText={setPassword}
+        secureTextEntry
       />
 
       <TouchableOpacity style={styles.button} onPress={handleLogin}>
